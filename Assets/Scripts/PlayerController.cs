@@ -72,20 +72,42 @@ public class PlayerController : MonoBehaviour
 
         isInventoryActive = !isInventoryActive;
         inventory.gameObject.SetActive(isInventoryActive);
-        EnableDisableInputActions(isInventoryActive);
+        EnableDisableInputActions(isInventoryActive, "Inventory");
 
     }
     public void OnMenu(InputAction.CallbackContext context)
     {
+        if (!context.performed) return;
+
         Menu.SetActive(!Menu.activeSelf);
+        EnableDisableInputActions(Menu.activeSelf, "Menu");
+    }
+    public void OnMenuButton()
+    {
+        Menu.SetActive(!Menu.activeSelf);
+        EnableDisableInputActions(Menu.activeSelf, "Menu");
     }
 
+
+    public void EnableDisableInputActions(bool isUIOpened, string EnabledUI)
+    {
+        if (isUIOpened)
+        {
+            playerInput.actions.Disable();
+            playerInput.actions.FindAction(EnabledUI).Enable();
+            OpenCloseCursor(true, CursorLockMode.None);
+        }
+        else
+        {
+            playerInput.actions.Enable();
+            OpenCloseCursor(false, CursorLockMode.Locked);
+        }
+    }
     public void EnableDisableInputActions(bool isUIOpened)
     {
         if (isUIOpened)
         {
             playerInput.actions.Disable();
-            playerInput.actions.FindAction("Inventory").Enable();
             OpenCloseCursor(true, CursorLockMode.None);
         }
         else

@@ -1,6 +1,5 @@
 using Enums;
 using TMPro;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 
 public class QuestManager : MonoBehaviour
@@ -41,7 +40,7 @@ public class QuestManager : MonoBehaviour
     }
     private void Start()
     {
-        InitializeQuestLine(tutorialQuests, QuestType.Tutorial);
+        InitializeQuestLine(repeatableQuests, QuestType.Repeatable);
     }
 
     private void InitializeQuestLine(QuestSO[] questList, QuestType questType)
@@ -61,7 +60,7 @@ public class QuestManager : MonoBehaviour
         switch (activeQuestLine)
         {
             case QuestType.Tutorial:
-                SelectNextQuest(tutorialQuests);
+                //SelectNextQuest(tutorialQuests);
                 break;
             case QuestType.Repeatable:
                 SelectNextQuest(repeatableQuests);
@@ -81,45 +80,22 @@ public class QuestManager : MonoBehaviour
 
     public void SelectNextQuest(QuestSO[] questList)
     {
-        int indxofActiveQuest = GetIndexofActiveQuest(questList);
-        if (questList.Length > indxofActiveQuest + 1)
-        {
-            ActiveQuest = questList[indxofActiveQuest + 1];
-            ActiveQuest.OnQuestFinished += OnQuestFinished;
-        }
-        else if (activeQuestLine != QuestType.Repeatable)
-        {
-            Debug.Log("Questline Ended.");
-            InitializeQuestLine(repeatableQuests, QuestType.Repeatable);
-        }
+        ActiveQuest = questList[Random.Range(0, questList.Length)];
+        ActiveQuest.OnQuestFinished += OnQuestFinished;
 
     }
 
-    private int GetIndexofActiveQuest(QuestSO[] questList)
-    {
-        if (ActiveQuest == null)
-        {
-            ActiveQuest = questList[0];
-            ActiveQuest.OnQuestFinished += OnQuestFinished;
-        }
-
-        for (int i = 0; i < questList.Length; i++)
-        {
-            if (questList[i].questID == ActiveQuest.questID)
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
     public bool IsPlayerHaveThisItems(InventoryItemSO[] goalItemList)
     {
         int accuredItemNumber = 0;
         foreach (InventorySlot iS in playerInventory.inventorySlots)
         {
             if (iS.myItem == null) continue;
+
             foreach (InventoryItemSO itemData in goalItemList)
             {
+
+                Debug.Log("asdasd");
                 if (iS.myItem.InventoryItemData.ID == itemData.ID)
                 {
                     Debug.Log("ItemFinded");
@@ -136,7 +112,7 @@ public class QuestManager : MonoBehaviour
                 }
                 return true;
             }
-            else return false;
+
         }
         return false;
     }
